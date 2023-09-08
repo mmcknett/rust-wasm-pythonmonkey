@@ -14,9 +14,8 @@ wasm-pack build --target nodejs
 # replaces calls to require('path') and require('fs') with pythonmonkey non Node.js equivalents
 NEW_READ_FILE_SYNC="function pyReadFileSync(filename) {\n  python.exec(\n\\\`\ndef getBytes(filename):\n  file = open(filename, 'rb')\n  return bytearray(file.read())\n\\\`\n  );\n  return python.eval('getBytes')(filename)\n}\n"
 
-# find ./pkg/*js -type f -exec sed -i "s/require('path').join(\(.*\));/[\1]\.join('\/');/g" {} \;
-# ChatGPT 3.5 generated this modificaiton:
-# find ./pkg -type f -name "*.js" -exec sed -i '' -e "s/require('path').join(\(.*\));/[\1].join('\/');/g" {} \;
-# Using `-name` isn't strictly necessary, but the -i and -e modifications are. Final:
-find ./pkg/*js -type f -exec sed -i '' "s/require('path').join(\(.*\));/[\1].join('\/');/g" {} \;
-find ./pkg/*js -type f -exec sed -i '' "s/require('fs').readFileSync(\(.*\));/(${NEW_READ_FILE_SYNC})(\1)/g" {} \;
+# Note: ChatGPT 3.5 identified that -i requires '' in macos:
+find ./pkg/*js -type f -exec sed -i '' \
+  -e "s/require('path').join(\(.*\));/[\1].join('\/');/g" \
+  -e "s/require('fs').readFileSync(\(.*\));/(${NEW_READ_FILE_SYNC})(\1)/g" \
+  {} \;
