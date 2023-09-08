@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "rust-wasm-pythonmonkey"
+name = "my-rust-library"
 version = "0.1.0"
